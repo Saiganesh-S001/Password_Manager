@@ -12,6 +12,8 @@ class User < ApplicationRecord
   before_save :encrypt_encryption_key
   after_find :decrypt_encryption_key
 
+  validates_uniqueness_of :email, :display_name
+
   def generate_encryption_key
     self.encryption_key = SecureRandom.hex(16) if encryption_key.blank? # 16-byte key
   end

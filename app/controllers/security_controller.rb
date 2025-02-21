@@ -5,7 +5,7 @@ class SecurityController < ApplicationController
   end
 
   def check
-    if current_user.valid_password?(params[:password]) # ✅ Check user's password
+    if current_user.valid_password?(params[:password])
       session[:verified] = true
       redirect_to password_records_path, notice: "Verification successful."
     else

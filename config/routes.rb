@@ -18,11 +18,6 @@ Rails.application.routes.draw do
     get "/users/sign_out" => "devise/sessions#destroy"
   end
 
-  resource :security, only: [] do
-    get :verify
-    post :check
-  end
-
   get 'verify_security', to: 'security#verify'
   post 'verify_security', to: 'security#check'
 end

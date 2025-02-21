@@ -28,7 +28,7 @@ class PasswordRecordsController < ApplicationController
 
     respond_to do |format|
       if @password_record.save
-        format.html { redirect_to @password_record, notice: "Password record was successfully created." }
+        format.html { redirect_to password_records_path, notice: "Password record was successfully created." }
         format.json { render :show, status: :created, location: @password_record }
       else
         format.html { render :new, status: :unprocessable_entity }
