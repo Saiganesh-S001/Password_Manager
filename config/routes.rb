@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
+  get "shared_access/create"
+  get "shared_access/destroy"
   resources :password_records
+  resources :shared_access, only: [:create, :destroy]
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -20,4 +23,5 @@ Rails.application.routes.draw do
 
   get 'verify_security', to: 'security#verify'
   post 'verify_security', to: 'security#check'
+
 end

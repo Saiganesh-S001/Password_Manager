@@ -1,6 +1,6 @@
-require 'securerandom'
-require 'base64'
-require 'openssl'
+require "securerandom"
+require "base64"
+require "openssl"
 
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
@@ -8,44 +8,38 @@ class User < ApplicationRecord
 
   has_many :password_records, dependent: :destroy
 
+  has_many :owned_shares, class_name: "SharedAccess", foreign_key: "owner_id", dependent: :destroy
+  has_many :shared_with, through: :owned_shares, source: :collaborator
+
+  has_many :received_shares, class_name: "SharedAccess", foreign_key: "collaborator_id", dependent: :destroy
+  has_many :shared_owners, through: :received_shares, source: :owner
+
+  encrypts :encryption_key, key: -> { Digest::SHA256.digest(Rails.application.secret_key_base) }
+
   before_create :generate_encryption_key
   before_save :encrypt_encryption_key
   after_find :decrypt_encryption_key
 
   validates_uniqueness_of :email, :display_name
 
+  validates :email, :display_name, presence: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :display_name, length: { minimum: 3, maximum: 20 }
+  validates :password, length: { minimum: 8 }
+
+  private
+
   def generate_encryption_key
-    self.encryption_key = SecureRandom.hex(16) if encryption_key.blank? # 16-byte key
+    self.encryption_key = SecureRandom.hex(16) if encryption_key.blank?
   end
 
   def encrypt_encryption_key
     return if encryption_key.blank?
-
-    cipher = OpenSSL::Cipher.new('AES-256-CBC') # ✅ Consistent with PasswordRecord
-    cipher.encrypt
-    key = Digest::SHA256.digest(Rails.application.secret_key_base) # Ensure 32-byte key
-    cipher.key = key
-    iv = cipher.random_iv # 16-byte IV
-    encrypted = cipher.update(encryption_key) + cipher.final
-    self.encryption_key = Base64.strict_encode64(iv + encrypted)
+    self.encryption_key = encrypt_encryption_key(encryption_key)
   end
 
   def decrypt_encryption_key
     return if encryption_key.blank?
-
-    decipher = OpenSSL::Cipher.new('AES-256-CBC') # ✅ Same as encryption method
-    decipher.decrypt
-    key = Digest::SHA256.digest(Rails.application.secret_key_base) # Ensure 32-byte key
-    decipher.key = key
-
-    encrypted_data = Base64.strict_decode64(encryption_key)
-    iv = encrypted_data.byteslice(0, 16) # Extract IV (16 bytes)
-    encrypted = encrypted_data.byteslice(16, encrypted_data.length - 16) # Extract encrypted data
-
-    decipher.iv = iv
-    self.encryption_key = decipher.update(encrypted) + decipher.final
-  rescue => e
-    Rails.logger.error "Decryption error: #{e.message}"
-    nil
+    self.encryption_key = decrypt_encryption_key(encryption_key)
   end
 end

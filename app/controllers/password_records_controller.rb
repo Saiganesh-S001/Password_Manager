@@ -5,12 +5,14 @@ class PasswordRecordsController < ApplicationController
 
   # GET /password_records or /password_records.json
   def index
-    @password_records = current_user.password_records.order(updated_at: :desc)
+    @password_records = PasswordRecord.accessible_by(current_user).order(created_at: :desc)
+    @password_records_made_by_current_user = current_user.password_records
+    @password_records_shared_with_current_user = PasswordRecord.accessible_by(current_user).order(updated_at: :desc)
   end
 
   # GET /password_records/1 or /password_records/1.json
   def show
-    @password_record = current_user.password_records.find(params[:id])
+    @password_record = PasswordRecord.friendly.find(params[:id])
   end
 
   # GET /password_records/new
@@ -63,12 +65,12 @@ class PasswordRecordsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_password_record
-      @password_record = current_user.password_records.find(params[:id])
+      @password_record = PasswordRecord.friendly.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def password_record_params
-      params.expect(password_record: [ :username, :password, :url, :title])
+      params.require(:password_record).permit(:username, :password, :url, :title)
     end
 
     def require_verification

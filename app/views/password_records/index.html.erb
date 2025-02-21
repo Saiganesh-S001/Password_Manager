@@ -1,18 +1,14 @@
 <% content_for :title, "Password Records" %>
-
-<div class="mx-auto max-w-4xl w-full p-10">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-4 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
-
+<div class="mx-auto max-w-4xl w-full">
   <div class="flex justify-between items-center mb-5 p-5">
     <h1 class="font-bold text-2xl">Password Records</h1>
     <%= link_to "New", new_password_record_path, class: "rounded-md px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
   </div>
 
-  <div class="bg-white shadow-md rounded-lg">
-    <% if @password_records.any? %>
-      <% @password_records.each_with_index do |password_record, index| %>
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">Your passwords : </h2>
+  <div class="bg-white shadow-md rounded-lg"> 
+    <% if @password_records_made_by_current_user.any? %>
+      <% @password_records_made_by_current_user.each_with_index do |password_record, index| %>
         <div class="flex justify-between items-center px-5 py-4 bg-gray-100 hover:bg-gray-50 mb-4 rounded-lg">
           <div class="space-y-1">
               <p class="text-lg font-medium"><%= password_record.title %></p>
@@ -23,12 +19,97 @@
             <div class="flex space-x-2">
               <%= link_to "View", password_record, class: "text-blue-400 hover:underline text-sm" %>
               <%= link_to "Edit", edit_password_record_path(password_record), class: "text-gray-600 hover:underline text-sm" %>
-              <%= button_to "Delete", password_record, method: :delete, class: "text-red-600 hover:underline text-sm", data: { turbo_confirm: "Are you sure?" } %>
+              <%= link_to "Delete", password_record, method: :delete, class: "text-red-600 hover:underline text-sm", data: { turbo_confirm: "Are you sure?" } %>
             </div>
         </div>
       <% end %>
     <% else %>
-      <p class="text-center py-5 text-gray-500">No password records found.</p>
+      <p class="text-center py-5 text-gray-500 mb-7">You don't have any password records yet.</p>
     <% end %>
   </div>
+
+
+
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">Shared passwords : </h2>
+  <div class="bg-white shadow-md rounded-lg">
+    <% if @password_records_shared_with_current_user.any? %>
+      <% @password_records_shared_with_current_user.each_with_index do |password_record, index| %>
+        <div class="flex justify-between items-center px-5 py-4 bg-gray-100 hover:bg-gray-50 mb-7 rounded-lg">
+          <div class="space-y-1">
+            <p class="text-lg font-medium"><%= password_record.title %></p>
+            <p class="text-sm text-gray-500">
+              <%= link_to password_record.url, password_record.url, target: "_blank", class: "text-blue-600 underline" %>
+            </p>
+          </div>
+          <div class="flex space-x-2">
+            <%= link_to "View", password_record, class: "text-blue-400 hover:underline text-sm" %>
+            <%= link_to "Edit", edit_password_record_path(password_record), class: "text-gray-600 hover:underline text-sm" %>
+            <%= link_to "Delete", password_record, method: :delete, class: "text-red-600 hover:underline text-sm", data: { turbo_confirm: "Are you sure?" } %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-center py-5 text-gray-500 mb-7">No password srecords shared with you.</p>
+    <% end %>
+  </div>
+
+  <div class="max-w-md">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Share Access</h2>
+
+    <%= form_with url: shared_access_index_path,
+                  method: :post,
+                  class: "space-y-4 mb-4",
+                  data: { controller: "form", turbo: false } do |f| %>
+
+      <div class="relative">
+        <%= f.email_field :email,
+                          placeholder: "Enter user's email",
+                          required: true,
+                          class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" %>
+
+        <% if flash[:error] %>
+          <p class="mt-1 text-sm text-red-600"><%= flash[:error] %></p>
+        <% end %>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= f.submit "Share Access",
+                     class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed" %>
+
+        <!--loading spinner -->
+        <div class="hidden" data-form-target="spinner">
+          <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+
+  <h3 class="text-xl font-semibold text-gray-800 mb-4">Users with Access</h3>
+
+  <% if current_user.shared_with.any? %>
+    <ul class="space-y-3">
+      <% current_user.shared_with.each do |collaborator| %>
+        <li class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-200">
+        <span class="text-gray-700">
+          <%= collaborator.email %>
+        </span>
+
+          <%= button_to shared_access_path(collaborator),
+                        method: :delete,
+                        data: { confirm: "Are you sure?" },
+                        class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150" do %>
+            Revoke Access
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="text-center py-6 bg-gray-50 rounded-lg">
+      <p class="text-gray-500">No users have been granted access yet.</p>
+    </div>
+  <% end %>
 </div>
