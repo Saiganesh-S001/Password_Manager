@@ -1,0 +1,10 @@
+<div class="w-full mx-auto mt-10 p-5 border rounded">
+  <h2 class="text-lg font-bold px-10">Enter Security Key</h2>
+  <%= form_with url: verify_security_path, method: :post do |f| %>
+    <div class="mb-4">
+      <%= f.label :password, "Security Password", class: "block" %>
+      <%= f.password_field :password, class: "border p-2 w-full" %>
+    </div>
+    <%= f.submit "Verify", class: "bg-blue-500 text-white p-2 rounded" %>
+  <% end %>
+</div>
