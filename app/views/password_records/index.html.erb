@@ -6,7 +6,7 @@
   </div>
 
   <h2 class="text-xl font-semibold text-gray-800 mb-4">Your passwords : </h2>
-  <div class="bg-white shadow-md rounded-lg"> 
+  <div class="rounded-lg">
     <% if @password_records_made_by_current_user.any? %>
       <% @password_records_made_by_current_user.each_with_index do |password_record, index| %>
         <div class="flex justify-between items-center px-5 py-4 bg-gray-100 hover:bg-gray-50 mb-4 rounded-lg">
@@ -43,8 +43,6 @@
           </div>
           <div class="flex space-x-2">
             <%= link_to "View", password_record, class: "text-blue-400 hover:underline text-sm" %>
-            <%= link_to "Edit", edit_password_record_path(password_record), class: "text-gray-600 hover:underline text-sm" %>
-            <%= link_to "Delete", password_record, method: :delete, class: "text-red-600 hover:underline text-sm", data: { turbo_confirm: "Are you sure?" } %>
           </div>
         </div>
       <% end %>
@@ -87,29 +85,31 @@
     <% end %>
   </div>
 
+  <div class="mb-10">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Users with Access</h3>
 
-  <h3 class="text-xl font-semibold text-gray-800 mb-4">Users with Access</h3>
-
-  <% if current_user.shared_with.any? %>
-    <ul class="space-y-3">
-      <% current_user.shared_with.each do |collaborator| %>
-        <li class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-200">
+    <% if current_user.shared_with.any? %>
+      <ul class="space-y-3">
+        <% current_user.shared_with.each do |collaborator| %>
+          <li class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-200">
         <span class="text-gray-700">
           <%= collaborator.email %>
         </span>
 
-          <%= button_to shared_access_path(collaborator),
-                        method: :delete,
-                        data: { confirm: "Are you sure?" },
-                        class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150" do %>
-            Revoke Access
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <div class="text-center py-6 bg-gray-50 rounded-lg">
-      <p class="text-gray-500">No users have been granted access yet.</p>
-    </div>
-  <% end %>
+            <%= button_to shared_access_path(collaborator),
+                          method: :delete,
+                          data: { confirm: "Are you sure?" },
+                          class: "px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150" do %>
+              Revoke Access
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="text-center py-6 bg-gray-50 rounded-lg">
+        <p class="text-gray-500">No users have been granted access yet.</p>
+      </div>
+    <% end %>
+  </div>
+
 </div>

@@ -54,11 +54,17 @@ class PasswordRecordsController < ApplicationController
 
   # DELETE /password_records/1 or /password_records/1.json
   def destroy
-    @password_record.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to password_records_path, status: :see_other, notice: "Password record was successfully destroyed." }
-      format.json { head :no_content }
+    if @password_record.user_id == current_user.id
+      @password_record.destroy!
+      respond_to do |format|
+        format.html { redirect_to password_records_path, status: :see_other, notice: "Password record was successfully destroyed." }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to password_records_url, notice: "You are not allowed to perform this action" }
+        format.json { head :no_content }
+      end
     end
   end
 

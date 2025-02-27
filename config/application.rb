@@ -15,6 +15,8 @@ module PasswordManager
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+    config.active_record.encryption.support_unencrypted_data = true
+    config.active_record.encryption.key_derivation_salt = "1234567890"
 
     # Configuration for the application, engines, and railties goes here.
     #
