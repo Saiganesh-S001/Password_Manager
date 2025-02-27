@@ -5,10 +5,30 @@ class PasswordRecordsController < ApplicationController
 
   # GET /password_records or /password_records.json
   def index
-    @password_records = PasswordRecord.accessible_by(current_user).order(created_at: :desc)
-    @password_records_made_by_current_user = current_user.password_records
-    @password_records_shared_with_current_user = PasswordRecord.accessible_by(current_user).order(updated_at: :desc)
+    search_title = params[:search_by_title]&.strip&.downcase
+    search_username = params[:search_by_username]&.strip&.downcase
+    search_url = params[:search_by_url]&.strip&.downcase
+
+    base_query = PasswordRecord.accessible_by(current_user)
+    @password_records_made_by_current_user = current_user.password_records.order(created_at: :desc)
+    @password_records_shared_with_current_user = base_query.where.not(user_id: current_user.id).order(updated_at: :desc)
+
+    if search_title.present? || search_username.present?
+      conditions = []
+      conditions << PasswordRecord.arel_table[:title].matches("%#{search_title}%") if search_title.present?
+      conditions << PasswordRecord.arel_table[:username].matches("%#{search_username}%") if search_username.present?
+      conditions << PasswordRecord.arel_table[:url].matches("%#{search_url}%") if search_url.present?
+
+      search_condition = conditions.inject(&:and)
+
+      @password_records_made_by_current_user = @password_records_made_by_current_user.where(search_condition)
+      @password_records_shared_with_current_user = @password_records_shared_with_current_user.where(search_condition)
+    end
+
+    @password_records = base_query.order(created_at: :desc)
+    @password_records = @password_records.where(search_condition) if search_title.present? || search_username.present? || search_url.present?
   end
+
 
   # GET /password_records/1 or /password_records/1.json
   def show
