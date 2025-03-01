@@ -17,7 +17,6 @@ RSpec.describe PasswordRecord, type: :model do
     it "encrypts the password before saving" do
       password_record.save!
       saved_password_record = PasswordRecord.last
-      puts saved_password_record.to_yaml
       expect(saved_password_record.password).to be_present
     end
   end

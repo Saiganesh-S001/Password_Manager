@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_054711) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_01_125047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_054711) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shared_password_records", force: :cascade do |t|
+    t.bigint "owner_id", null: false
+    t.bigint "collaborator_id", null: false
+    t.bigint "password_record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collaborator_id"], name: "index_shared_password_records_on_collaborator_id"
+    t.index ["owner_id", "collaborator_id", "password_record_id"], name: "index_shared_passwords_on_owner_collab_record", unique: true
+    t.index ["owner_id"], name: "index_shared_password_records_on_owner_id"
+    t.index ["password_record_id"], name: "index_shared_password_records_on_password_record_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "reset_password_token"
@@ -61,4 +73,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_054711) do
   end
 
   add_foreign_key "password_records", "users"
+  add_foreign_key "shared_password_records", "password_records"
+  add_foreign_key "shared_password_records", "users", column: "collaborator_id"
+  add_foreign_key "shared_password_records", "users", column: "owner_id"
 end

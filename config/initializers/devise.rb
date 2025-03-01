@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'ca3edcb82c0f6cc4325b5b8467d946aa92c176653d6db51c3480a5cef8883b308df7a167b8066360a77a33761248daf125d9c619f0d6a2207c15c38d85cb6fab'
+  # config.secret_key = '2cb14bfb7c8e708ee9bb96a0ad20bec47ab206d984e7d8d53d53d50f0f3f15556c3117f741ed5ef2c60220a464bf736b3b4a88542412af48b75e6bfbc211bd6a'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -24,10 +24,10 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = 'saiganeshs902@gmail.com'
+  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
 
   # Configure the class responsible to send e-mails.
-  config.mailer = 'Devise::Mailer'
+  # config.mailer = 'Devise::Mailer'
 
   # Configure the parent class responsible to send e-mails.
   # config.parent_mailer = 'ActionMailer::Base'
@@ -126,7 +126,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '8fd50f133bd735641640bb2a9194052227455f262938f423ae6c22a1d69e364864082a8d07705c1a772e86132d15e50bd2201d5f8adb8d6d5bc91b33213d0c02'
+  # config.pepper = 'a880e8eaa77f7fc44fc5b840a9cdceb5a163992d66011687d8087e8b01aef07fa326cef8936390ba4701525a25674d5effbdc9d843c8bd6df8675dd97516c16c'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
