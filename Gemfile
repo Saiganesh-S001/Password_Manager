@@ -72,3 +72,6 @@ gem 'devise', '~> 4.9', '>= 4.9.4'
 gem 'friendly_id', '~> 5.5', '>= 5.5.1'
 gem "tailwindcss-ruby", "~> 4.0"
 gem 'factory_bot_rails', '~> 6.4', '>= 6.4.4'
+gem 'grape', '~> 2.3'
+gem 'grape-entity', '~> 1.0', '>= 1.0.1'
+gem 'rspec-rails'

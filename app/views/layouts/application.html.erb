@@ -20,6 +20,26 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+<!--    <script>-->
+<!--        window.addEventListener("beforeunload", function () {-->
+<!--            document.cookie = "_your_app_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";-->
+<!--        });-->
+<!--    </script>-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+            window.addEventListener("beforeunload", function () {
+                fetch("/reset_verification", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-Token": csrfToken,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "same-origin",
+                });
+            });
+        });
+    </script>
   </head>
 
 <body class="flex flex-col min-h-screen bg-teal-50">

@@ -17,6 +17,23 @@ module PasswordManager
     config.autoload_lib(ignore: %w[assets tasks])
     config.active_record.encryption.support_unencrypted_data = true
     config.active_record.encryption.key_derivation_salt = "1234567890"
+    config.session_store :cookie_store, key: "_your_app_session"
+
+    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
+
+    config.autoload_paths += [
+      Rails.root.join('app', 'api'),
+      Rails.root.join('app', 'api', 'root', 'v1'),
+      Rails.root.join('app', 'api', 'root')
+    ]
+
+    # Make sure eager loading works in production
+    config.eager_load_paths += [
+      Rails.root.join('app', 'api'),
+      Rails.root.join('app', 'api', 'root', 'v1'),
+      Rails.root.join('app', 'api', 'root')
+    ]
+
 
     # Configuration for the application, engines, and railties goes here.
     #

@@ -20,7 +20,7 @@ class User < ApplicationRecord
   has_many :shared_owners, through: :received_shares, source: :owner
 
   # Sharing only specific password_records
-  has_many :shared_password_records, foreign_key: "owner_id", dependent: :destroy
+  has_many :shared_password_records, class_name: "SharedPasswordRecord", foreign_key: "owner_id", dependent: :destroy
   has_many :shared_passwords, through: :shared_password_records, source: :password_record
 
   has_many :received_password_records, class_name: "SharedPasswordRecord", foreign_key: "collaborator_id", dependent: :destroy

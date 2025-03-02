@@ -8,8 +8,7 @@ class PasswordRecord < ApplicationRecord
 
   scope :for_user, ->(user) {
     where(user_id: user.shared_owners.pluck(:id))
-      .or(where(user_id: user.id))
-      .or(where(user.received_password_records.pluck(:id)))
+      .or(where(id: user.received_password_records.pluck(:password_record_id)))
   }
 
   scope :real_accessible_by, ->(user) {

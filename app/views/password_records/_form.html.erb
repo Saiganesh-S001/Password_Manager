@@ -23,7 +23,7 @@
 
   <div class="my-5">
     <%= form.label :password %>
-    <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": password_record.errors[:password].none?, "border-red-400 focus:outline-red-600": password_record.errors[:password].any?}] %>
+    <%= form.password_field :password,value: @password_record.password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": password_record.errors[:password].none?, "border-red-400 focus:outline-red-600": password_record.errors[:password].any?}] %>
   </div>
 
   <div class="my-5">

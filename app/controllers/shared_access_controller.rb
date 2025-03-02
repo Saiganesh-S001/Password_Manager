@@ -7,7 +7,7 @@ class SharedAccessController < ApplicationController
       if params[:password_record_id].present?
         password_record_id = params[:password_record_id]
         password_record = current_user.password_records.find_by(id: password_record_id)
-        shared_access = SharedPasswordRecord.create(owner: current_user, collaborator: collaborator, password_record: password_record)
+        shared_access = current_user.shared_password_records.create(collaborator: collaborator, password_record: password_record)
       else # share all passwords
         shared_access = current_user.owned_shares.create(collaborator: collaborator)
       end

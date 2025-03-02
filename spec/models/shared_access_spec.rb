@@ -4,10 +4,10 @@ RSpec.describe SharedAccess, type: :model do
   it { is_expected.to belong_to(:owner).class_name('User') }
   it { is_expected.to belong_to(:collaborator).class_name('User') }
 
-  let(:owner) {create(:user)}
-  let(:collaborator) {create(:user)}
-  let(:another_collaborator) {create(:user)}
-  let(:shared_access) {create(:shared_access, owner: owner, collaborator: collaborator)}
+  let(:owner) { create(:user) }
+  let(:collaborator) { create(:user) }
+  let(:another_collaborator) { create(:user) }
+  let(:shared_access) { create(:shared_access, owner: owner, collaborator: collaborator) }
 
   it "allows user to share passwords" do
     expect(shared_access).to be_valid
