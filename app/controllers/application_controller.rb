@@ -10,5 +10,4 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:account_update, keys: [:display_name, :encryption_key])
   end
 
-
 end
