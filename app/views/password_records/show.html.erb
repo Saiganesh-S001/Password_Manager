@@ -1,11 +1,11 @@
-<% content_for :title, "Showing password record" %>
+<% content_for :title, @password_record.title %>
 
 <div class="md:w-2/3 w-full">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing password record</h1>
+  <h1 class="font-bold text-4xl"><%= @password_record.title %></h1>
 
   <%= render @password_record %>
 

@@ -1,7 +1,7 @@
 class PasswordRecordsController < ApplicationController
   before_action :set_password_record, only: %i[ show edit update destroy ]
   before_action :authenticate_user!
-  before_action :require_verification, only: [:show]
+  before_action :require_verification, only: %i[ show ]
 
   # GET /password_records or /password_records.json
   def index
@@ -9,7 +9,7 @@ class PasswordRecordsController < ApplicationController
     search_username = params[:search_by_username]&.strip&.downcase
     search_url = params[:search_by_url]&.strip&.downcase
 
-    base_query = PasswordRecord.accessible_by(current_user)
+    base_query = PasswordRecord.for_user(current_user)
     @password_records_made_by_current_user = current_user.password_records.order(created_at: :desc)
     @password_records_shared_with_current_user = base_query.where.not(user_id: current_user.id).order(updated_at: :desc)
 
@@ -82,26 +82,30 @@ class PasswordRecordsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to password_records_url, notice: "You are not allowed to perform this action" }
+        format.html { redirect_to password_records_url, alert: "You are not allowed to perform this action" }
         format.json { head :no_content }
       end
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_password_record
-      @password_record = PasswordRecord.friendly.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_password_record
+    @password_record = PasswordRecord.friendly.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def password_record_params
-      params.require(:password_record).permit(:username, :password, :url, :title)
-    end
+  # Only allow a list of trusted parameters through.
+  def password_record_params
+    params.require(:password_record).permit(:username, :password, :url, :title)
+  end
 
-    def require_verification
-      unless session[:verified]
-        redirect_to verify_security_path, alert: "Please verify your identity first."
-      end
+  def require_verification
+    Rails.logger.info "Session after opening the tab: #{session.to_hash}"
+    if session[:verified].blank? || session[:verified_at].blank? || session[:verified_at] < 3.minutes.ago || session[:verified] == nil
+      session[:verified] = nil
+      redirect_to verify_security_path, alert: "Session expired. Please verify your identity again."
+    else
+      session[:verified_at] = Time.current
     end
+  end
 end
