@@ -3,6 +3,8 @@ class PasswordRecord < ApplicationRecord
   friendly_id :title, use: :slugged
   belongs_to :user
 
+  has_many :shared_password_records, dependent: :destroy
+
 
   encrypts :password
 

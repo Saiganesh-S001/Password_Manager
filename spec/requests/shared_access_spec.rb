@@ -11,7 +11,7 @@ RSpec.describe "SharedAccess", type: :request do
     it "allows sharing access" do
       expect {
         post shared_access_index_path, params: { email: collaborator.email } # should use only index_path and not shared_access_path
-      }.to change(SharedAccess, :count).by(1)
+      }.to change(SharedPasswordRecord, :count).by(owner.password_records.count)
 
       expect(response).to redirect_to(password_records_path)
       expect(flash[:notice]).to include("Access shared with #{collaborator.email}")
