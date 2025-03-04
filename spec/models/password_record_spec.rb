@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PasswordRecord, type: :model do
-  let(:password_record) { FactoryBot.build(:password_record) }
+  let(:user) { create(:user) }
+  let(:password_record) { build(:password_record, user: user) }
   context 'validations' do
     it "is valid with valid attributes" do
       expect(password_record).to be_valid
@@ -15,9 +16,13 @@ RSpec.describe PasswordRecord, type: :model do
 
   context 'encryption' do
     it "encrypts the password before saving" do
+      original_password = password_record.password
       password_record.save!
-      saved_password_record = PasswordRecord.last
-      expect(saved_password_record.password).to be_present
+
+      # Reload to get the encrypted version
+      saved_record = PasswordRecord.find(password_record.id)
+      expect(saved_record.password).to be_present
+      expect(saved_record.password).not_to eq(original_password)
     end
   end
 end

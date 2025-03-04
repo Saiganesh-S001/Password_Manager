@@ -39,13 +39,12 @@ RSpec.configure do |config|
   ]
 
   config.before(:suite) do
-    # Force Devise to define the mapping
     Devise.setup do |config|
       config.warden do |manager|
         manager.default_strategies(scope: :user).unshift :database_authenticatable
       end
     end
-    Devise.add_mapping(:user, {class_name: 'User'})
+    Devise.add_mapping(:user, { class_name: 'User' })
   end
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your

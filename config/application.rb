@@ -17,7 +17,7 @@ module PasswordManager
     config.autoload_lib(ignore: %w[assets tasks])
     config.active_record.encryption.support_unencrypted_data = true
     config.active_record.encryption.key_derivation_salt = "1234567890"
-
+    config.session_store :cookie_store, key: "_your_app_session"
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

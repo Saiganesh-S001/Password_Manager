@@ -60,9 +60,8 @@
                   Manage Access ▼
                 </button>
 
-                <!-- Dropdown Options -->
                 <div id="<%= dom_id(collaborator) %>"
-                     class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-md rounded-md">
+                     class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                   <% if shared_records.any? %>
                     <% shared_records.each do |shared_record| %>
                       <%= button_to shared_access_path(id: collaborator.id, password_record_id: shared_record.password_record.id),
@@ -96,13 +95,19 @@
   <script>
       function toggleDropdown(id) {
           let dropdown = document.getElementById(id);
+          document.querySelectorAll("[id^='collaborator_']").forEach(otherDropdown => {
+              if (otherDropdown.id !== id) {
+                  otherDropdown.classList.add("hidden");
+              }
+          });
+
           dropdown.classList.toggle("hidden");
+          event.stopPropagation();
       }
 
-      // Close dropdown when clicking outside
       document.addEventListener("click", function(event) {
           document.querySelectorAll("[id^='collaborator_']").forEach(dropdown => {
-              if (!dropdown.contains(event.target) && !event.target.matches("button")) {
+              if (!dropdown.classList.contains("hidden") && !dropdown.contains(event.target) && !event.target.closest("button")) {
                   dropdown.classList.add("hidden");
               }
           });

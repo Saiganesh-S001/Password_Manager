@@ -13,7 +13,7 @@ class PasswordRecordsController < ApplicationController
     @password_records_made_by_current_user = current_user.password_records.order(created_at: :desc)
     @password_records_shared_with_current_user = base_query.where.not(user_id: current_user.id).order(updated_at: :desc)
 
-    if search_title.present? || search_username.present?
+    if search_title.present? || search_username.present? || search_url.present?
       conditions = []
       conditions << PasswordRecord.arel_table[:title].matches("%#{search_title}%") if search_title.present?
       conditions << PasswordRecord.arel_table[:username].matches("%#{search_username}%") if search_username.present?
@@ -27,6 +27,11 @@ class PasswordRecordsController < ApplicationController
 
     @password_records = base_query.order(created_at: :desc)
     @password_records = @password_records.where(search_condition) if search_title.present? || search_username.present? || search_url.present?
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @password_records }
+    end
   end
 
 

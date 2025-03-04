@@ -5,8 +5,29 @@ class PasswordRecord < ApplicationRecord
 
   has_many :shared_password_records, dependent: :destroy
 
+  before_save :encrypt_password
+  after_find :decrypt_password
 
-  encrypts :password
+  def encrypt_password
+    return unless password.present?
+
+    encryptor = ActiveSupport::MessageEncryptor.new(encryption_key_for_record)
+    self.password = encryptor.encrypt_and_sign(password)
+  end
+
+  def decrypt_password
+    self.password = decrypted_password
+  end
+
+  def decrypted_password
+    return unless password.present?
+
+    encryptor = ActiveSupport::MessageEncryptor.new(encryption_key_for_record)
+    encryptor.decrypt_and_verify(password)
+  rescue ActiveSupport::MessageEncryptor::InvalidMessage
+    nil # Handle invalid decryption
+  end
+
 
   scope :for_user, ->(user) {
     where(user_id: user.shared_owners.pluck(:id))
@@ -29,4 +50,12 @@ class PasswordRecord < ApplicationRecord
   validates :url, format: { with: URI.regexp(%w[http https]), allow_blank: true }
   validates :password, length: { minimum: 8 }, allow_nil: true # allow_nil allows updates without requiring new password
   validates :title, length: { minimum: 3, maximum: 20 }
+
+  private
+
+  def encryption_key_for_record
+    secret_key = "#{Rails.application.credentials.active_record_encryption[:primary_key]}#{user.encryption_key}"
+    key = Digest::SHA256.digest(secret_key) # Convert to a valid 32-byte key
+    key
+  end
 end
