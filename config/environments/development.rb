@@ -61,21 +61,20 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   config.action_view.annotate_rendered_view_with_filenames = true
 
-
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
+    address: "smtp-relay.brevo.com",
     port: 587,
-    domain: ENV["DOMAIN_NAME"],
-    authentication: "plain",
-    enable_starttls_auto: true,
-    user_name: 'saiganeshs902@gmail.com',
-    password: 'Ssai@12345'
+    user_name: "saiganeshs902@gmail.com",
+    password: "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",
+    authentication: :login,
+    enable_starttls_auto: true
   }
   # ActionMailer Config
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.action_mailer.default_url_options = { host: "localhost:3000" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.raise_delivery_errors = true
   # Send email in development mode.
+  #
   config.action_mailer.perform_deliveries = true
 
 
