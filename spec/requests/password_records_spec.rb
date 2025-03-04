@@ -14,24 +14,25 @@ RSpec.describe "PasswordRecords API", type: :request do
       get password_records_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include('<p class="text-lg font-medium">Test</p>')
-      expect(response.body).to include('<p class="text-lg font-medium">Hello</p>')
+      # check for link to password record (using friendly_id)
+      expect(response.body).to include('<a class="text-lg font-medium" href="/password_records/test">Test</a>')
+      expect(response.body).to include('<a class="text-lg font-medium" href="/password_records/hello">Hello</a>')
     end
 
     it "returns the correct records when searching by title" do
       get password_records_path, params: { search_by_title: "Test" }
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include('<p class="text-lg font-medium">Test</p>')
-      expect(response.body).not_to include('<p class="text-lg font-medium">Hello</p>')
+      expect(response.body).to include('<a class="text-lg font-medium" href="/password_records/test">Test</a>')
+      expect(response.body).not_to include('<a class="text-lg font-medium" href="/password_records/hello">Hello</a>')
     end
 
     it "returns the correct records when searching by username" do
       get password_records_path, params: { search_by_username: "test_user" }
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include('<p class="text-lg font-medium">Test</p>')
-      expect(response.body).not_to include('<p class="text-lg font-medium">Hello</p>')
+      expect(response.body).to include('<a class="text-lg font-medium" href="/password_records/test">Test</a>')
+      expect(response.body).not_to include('<a class="text-lg font-medium" href="/password_records/hello">Hello</a>')
     end
   end
 

@@ -51,8 +51,8 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'byebug', platforms: %i[mri windows jruby]
-  gem 'rspec-rails'
+  gem "byebug", platforms: %i[mri windows jruby]
+  gem "rspec-rails"
 end
 
 group :development do
@@ -65,10 +65,11 @@ group :test do
   gem "capybara"
   gem "faker"
   gem "selenium-webdriver"
-  gem 'shoulda-matchers', '~> 5.0'
+  gem "shoulda-matchers", "~> 5.0"
+  gem "database_cleaner", "~> 2.0", ">= 2.0.1"
 end
 
-gem 'devise', '~> 4.9', '>= 4.9.4'
-gem 'friendly_id', '~> 5.5', '>= 5.5.1'
+gem "devise", "~> 4.9", ">= 4.9.4"
+gem "friendly_id", "~> 5.5", ">= 5.5.1"
 gem "tailwindcss-ruby", "~> 4.0"
-gem 'factory_bot_rails', '~> 6.4', '>= 6.4.4'
+gem "factory_bot_rails", "~> 6.4", ">= 6.4.4"

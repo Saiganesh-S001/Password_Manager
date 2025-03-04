@@ -9,9 +9,12 @@
 
   <%= render @password_record %>
 
-  <%= link_to "Edit this password record", edit_password_record_path(@password_record), class: "mt-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <% if @password_record.user_id == current_user.id %>
+    <%= link_to "Edit this password record", edit_password_record_path(@password_record), class: "mt-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <div class="inline-block ml-2">
+      <%= button_to "Delete this password record", @password_record, method: :delete, class: "mt-2 rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    </div>
+  <% end %>
   <%= link_to "Back to password records", password_records_path, class: "ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <div class="inline-block ml-2">
-    <%= button_to "Destroy this password record", @password_record, method: :delete, class: "mt-2 rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-  </div>
+  
 </div>

@@ -12,6 +12,8 @@ class User < ApplicationRecord
 
   has_many :password_records, dependent: :destroy
   before_create :generate_encryption_key
+  before_validation :ensure_encryption_key
+
   # Sharing all the password_records
   has_many :owned_shares, class_name: "SharedAccess", foreign_key: "owner_id", dependent: :destroy
   has_many :shared_with, through: :owned_shares, source: :collaborator
@@ -21,10 +23,10 @@ class User < ApplicationRecord
 
   # Sharing only specific password_records
   has_many :shared_password_records, class_name: "SharedPasswordRecord", foreign_key: "owner_id", dependent: :destroy
-  has_many :shared_passwords, through: :shared_password_records, source: :password_record
+  has_many :shared_passwords, through: :shared_password_records, source: :password_record, dependent: :destroy
 
   has_many :received_password_records, class_name: "SharedPasswordRecord", foreign_key: "collaborator_id", dependent: :destroy
-  has_many :received_passwords, through: :received_password_records, source: :password_record
+  has_many :received_passwords, through: :received_password_records, source: :password_record, dependent: :destroy
 
 
   validates_uniqueness_of :email, :display_name
@@ -36,6 +38,10 @@ class User < ApplicationRecord
 
   def generate_encryption_key
     self.encryption_key = SecureRandom.hex(32)
+  end
+
+  def ensure_encryption_key
+    self.encryption_key ||= SecureRandom.hex(32)
   end
 
   def encrypt_password(password)

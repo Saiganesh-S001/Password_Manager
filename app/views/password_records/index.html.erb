@@ -1,6 +1,6 @@
 <% content_for :title, "Password Records" %>
 
-<div class="max-w-4xl w-full mx-auto">
+<div class="max-w-4xl w-full mx-auto" data-controller="dropdown">
 
   <div class="flex justify-between items-center mb-5 p-5">
     <h1 class="font-bold text-2xl">Password Records</h1>
@@ -34,7 +34,9 @@
   <div class="mb-10">
     <h3 class="text-xl font-semibold text-gray-800 mb-4">Users with Access</h3>
 
-    <% shared_users = (current_user.owned_shares.map(&:collaborator) + current_user.shared_password_records.map(&:collaborator)).uniq %>
+    <%# shared_users = (current_user.owned_shares.map(&:collaborator) + current_user.shared_password_records.map(&:collaborator)).uniq %>
+
+    <% shared_users = current_user.shared_password_records.map(&:collaborator).uniq %>
 
     <% if shared_users.any? %>
       <ul class="space-y-3">
@@ -53,30 +55,30 @@
                 <% end %>
               </div>
 
-
               <div class="relative">
-                <button onclick="toggleDropdown('<%= dom_id(collaborator) %>')"
+                <button data-action="dropdown#toggle"
+                        data-dropdown-id="dropdown_<%= collaborator.id %>"
                         class="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md">
                   Manage Access ▼
                 </button>
 
-                <div id="<%= dom_id(collaborator) %>"
-                     class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                <div id="dropdown_<%= collaborator.id %>"
+                       class="hidden dropdown-content absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                   <% if shared_records.any? %>
                     <% shared_records.each do |shared_record| %>
                       <%= button_to shared_access_path(id: collaborator.id, password_record_id: shared_record.password_record.id),
-                                    method: :delete,
-                                    data: { confirm: "Remove access to #{shared_record.password_record.title}?" },
-                                    class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50" do %>
+                                  method: :delete,
+                                  data: { turbo_confirm: "Remove access to #{shared_record.password_record.title}?" },
+                                  class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50" do %>
                         Remove <%= shared_record.password_record.title %>
                       <% end %>
                     <% end %>
                   <% end %>
 
                   <%= button_to shared_access_path(collaborator),
-                                method: :delete,
-                                data: { confirm: "Revoke full access?" },
-                                class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t" do %>
+                              method: :delete,
+                              data: { turbo_confirm: "Revoke all access?" },
+                              class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t" do %>
                     Revoke All Access
                   <% end %>
                 </div>
@@ -91,28 +93,5 @@
       </div>
     <% end %>
   </div>
-
-  <script>
-      function toggleDropdown(id) {
-          let dropdown = document.getElementById(id);
-          document.querySelectorAll("[id^='collaborator_']").forEach(otherDropdown => {
-              if (otherDropdown.id !== id) {
-                  otherDropdown.classList.add("hidden");
-              }
-          });
-
-          dropdown.classList.toggle("hidden");
-          event.stopPropagation();
-      }
-
-      document.addEventListener("click", function(event) {
-          document.querySelectorAll("[id^='collaborator_']").forEach(dropdown => {
-              if (!dropdown.classList.contains("hidden") && !dropdown.contains(event.target) && !event.target.closest("button")) {
-                  dropdown.classList.add("hidden");
-              }
-          });
-      });
-  </script>
-
 
 </div>

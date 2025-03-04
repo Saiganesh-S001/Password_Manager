@@ -2,6 +2,7 @@ class PasswordRecordsController < ApplicationController
   before_action :set_password_record, only: %i[ show edit update destroy ]
   before_action :authenticate_user!
   before_action :require_verification, only: %i[ show ]
+  before_action :ensure_ownership, only: %i[ show edit update destroy ]
 
   # GET /password_records or /password_records.json
   def index
@@ -66,15 +67,23 @@ class PasswordRecordsController < ApplicationController
 
   # PATCH/PUT /password_records/1 or /password_records/1.json
   def update
-    respond_to do |format|
-      if @password_record.update(password_record_params)
-        format.html { redirect_to @password_record, notice: "Password record was successfully updated." }
-        format.json { render :show, status: :ok, location: @password_record }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @password_record.errors, status: :unprocessable_entity }
+    if @password_record.user_id == current_user.id
+      respond_to do |format|
+        if @password_record.update(password_record_params)
+          format.html { redirect_to @password_record, notice: "Password record was successfully updated." }
+          format.json { render :show, status: :ok, location: @password_record }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @password_record.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to password_records_url, status: :see_other, alert: "You are not allowed to perform this action." }
+        format.json { head :no_content }
       end
     end
+
   end
 
   # DELETE /password_records/1 or /password_records/1.json
@@ -87,7 +96,7 @@ class PasswordRecordsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to password_records_url, alert: "You are not allowed to perform this action" }
+        format.html { redirect_to password_records_url, status: :see_other, alert: "You are not allowed to perform this action." }
         format.json { head :no_content }
       end
     end
@@ -111,6 +120,13 @@ class PasswordRecordsController < ApplicationController
       redirect_to verify_security_path, alert: "Session expired. Please verify your identity again."
     else
       session[:verified_at] = Time.current
+    end
+  end
+
+  def ensure_ownership
+    allowed_users = @password_record.shared_password_records.map(&:collaborator)
+    unless allowed_users.include?(current_user) || @password_record.user_id == current_user.id
+      redirect_to password_records_path, status: :see_other, alert: "You are not allowed to access this password record."
     end
   end
 end
