@@ -5,11 +5,11 @@ require "openssl"
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-  devise :database_authenticatable, :registerable,
-          :recoverable, :rememberable, :validatable
+  include Devise::JWT::RevocationStrategies::JTIMatcher # for jwt_revocation_strategy
 
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: self # self is the class itself (User)
   has_many :password_records, dependent: :destroy
   before_create :generate_encryption_key
   before_validation :ensure_encryption_key
