@@ -1,34 +1,97 @@
 <% content_for :title, "Password Records" %>
 
-<div class="mx-auto max-w-4xl w-full p-10">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-4 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<div class="max-w-4xl w-full mx-auto" data-controller="dropdown">
 
   <div class="flex justify-between items-center mb-5 p-5">
     <h1 class="font-bold text-2xl">Password Records</h1>
     <%= link_to "New", new_password_record_path, class: "rounded-md px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
   </div>
 
-  <div class="bg-white shadow-md rounded-lg">
-    <% if @password_records.any? %>
-      <% @password_records.each_with_index do |password_record, index| %>
-        <div class="flex justify-between items-center px-5 py-4 bg-gray-100 hover:bg-gray-50 mb-4 rounded-lg">
-          <div class="space-y-1">
-              <p class="text-lg font-medium"><%= password_record.title %></p>
-              <p class="text-sm text-gray-500">
-                <%= link_to password_record.url, password_record.url, target: "_blank", class: "text-blue-600 underline" %>
-              </p>
-            </div>
-            <div class="flex space-x-2">
-              <%= link_to "View", password_record, class: "text-blue-400 hover:underline text-sm" %>
-              <%= link_to "Edit", edit_password_record_path(password_record), class: "text-gray-600 hover:underline text-sm" %>
-              <%= button_to "Delete", password_record, method: :delete, class: "text-red-600 hover:underline text-sm", data: { turbo_confirm: "Are you sure?" } %>
-            </div>
-        </div>
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">Your passwords:</h2>
+  <div class="rounded-lg">
+    <% if @password_records_made_by_current_user.any? %>
+      <% @password_records_made_by_current_user.each do |password_record| %>
+        <%= render "password_records/password_record_list", password_record: password_record, owned: true %>
       <% end %>
     <% else %>
-      <p class="text-center py-5 text-gray-500">No password records found.</p>
+      <p class="text-center py-5 text-gray-500 mb-7">You don't have any password records yet.</p>
     <% end %>
   </div>
+
+  <h2 class="text-xl font-semibold text-gray-800 mb-4">Shared passwords:</h2>
+  <div class="rounded-lg">
+    <% if @password_records_shared_with_current_user.any? %>
+      <% @password_records_shared_with_current_user.each do |password_record| %>
+        <%= render "password_records/password_record_list", password_record: password_record, owned: false %>
+      <% end %>
+    <% else %>
+      <p class="text-center py-5 text-gray-500 mb-7">No passwords shared with you.</p>
+    <% end %>
+  </div>
+
+  <%= render "password_records/share_form" %>
+
+  <div class="mb-10">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Users with Access</h3>
+
+    <%# shared_users = (current_user.owned_shares.map(&:collaborator) + current_user.shared_password_records.map(&:collaborator)).uniq %>
+
+    <% shared_users = current_user.shared_password_records.map(&:collaborator).uniq %>
+
+    <% if shared_users.any? %>
+      <ul class="space-y-3">
+        <% shared_users.each do |collaborator| %>
+          <li class="p-3 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="text-gray-700 font-medium"><%= collaborator.email %></span>
+                <% shared_records = current_user.shared_password_records.where(collaborator: collaborator) %>
+                <% if shared_records.any? %>
+                  <p class="text-xs text-gray-500">Access to:
+                    <%= shared_records.map { |record| record.password_record.title }.join(", ") %>
+                  </p>
+                <% else %>
+                  <p class="text-xs text-gray-500">Full Access</p>
+                <% end %>
+              </div>
+
+              <div class="relative">
+                <button data-action="dropdown#toggle"
+                        data-dropdown-id="dropdown_<%= collaborator.id %>"
+                        class="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md">
+                  Manage Access ▼
+                </button>
+
+                <div id="dropdown_<%= collaborator.id %>"
+                       class="hidden dropdown-content absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                  <% if shared_records.any? %>
+                    <% shared_records.each do |shared_record| %>
+                      <%= button_to shared_access_path(id: collaborator.id, password_record_id: shared_record.password_record.id),
+                                  method: :delete,
+                                  data: { turbo_confirm: "Remove access to #{shared_record.password_record.title}?" },
+                                  class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50" do %>
+                        Remove <%= shared_record.password_record.title %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+
+                  <%= button_to shared_access_path(collaborator),
+                              method: :delete,
+                              data: { turbo_confirm: "Revoke all access?" },
+                              class: "block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t" do %>
+                    Revoke All Access
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="text-center py-6 bg-white rounded-lg shadow-md">
+        <p class="text-gray-500">No users have been granted access yet.</p>
+      </div>
+    <% end %>
+  </div>
+
 </div>

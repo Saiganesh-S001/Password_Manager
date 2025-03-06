@@ -1,14 +1,28 @@
 <nav class="bg-gray-800 p-4 text-white">
-  <div class="container mx-auto flex justify-between">
-    <h1 class="text-lg font-bold"><%= link_to "Password Manager", root_path %></h1>
-    <div>
+  <div class="container mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <h1 class="text-lg font-bold">
+      <%= link_to "Password Manager", root_path, class: "hover:text-gray-300" %>
+    </h1>
+
+    <!-- User -->
+    <div class="flex items-center gap-4">
       <% if user_signed_in? %>
-        <%= link_to "My Profile", edit_user_registration_path, class: "mr-4" %>
-        <%= link_to "Logout", destroy_user_session_path, method: :delete %>
+        <%= link_to "My Profile", edit_user_registration_path, class: "hover:text-gray-300" %>
+        <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "hover:text-gray-300" %>
       <% else %>
-        <%= link_to "Sign In", new_user_session_path, class: "mr-4" %>
-        <%= link_to "Sign Up", new_user_registration_path %>
+        <%= link_to "Sign In", new_user_session_path, class: "hover:text-gray-300" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "hover:text-gray-300" %>
       <% end %>
     </div>
+  </div>
+
+  <div class="container mx-auto mt-2">
+    <%= form_tag "/password_records", method: "get", class: "flex flex-wrap md:flex-nowrap items-center justify-center gap-2 p-3 rounded-lg" do %>
+      <%= text_field_tag :search_by_title, params[:search_by_title], placeholder: "Title", class: "w-36 p-2 text-sm bg-gray-600 text-white border border-gray-500 rounded-md placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none" %>
+      <%= text_field_tag :search_by_url, params[:search_by_url], placeholder: "URL", class: "w-36 p-2 text-sm bg-gray-600 text-white border border-gray-500 rounded-md placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none" %>
+      <%= text_field_tag :search_by_username, params[:search_by_username], placeholder: "Username", class: "w-36 p-2 text-sm bg-gray-600 text-white border border-gray-500 rounded-md placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none" %>
+
+      <%= submit_tag "Search", class: "px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition duration-150" %>
+    <% end %>
   </div>
 </nav>

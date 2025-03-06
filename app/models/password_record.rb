@@ -1,50 +1,61 @@
 class PasswordRecord < ApplicationRecord
+  extend FriendlyId
+  friendly_id :title, use: :slugged
   belongs_to :user
+
+  has_many :shared_password_records, dependent: :destroy # this will delete the shared_password_records when the password_record is deleted
 
   before_save :encrypt_password
   after_find :decrypt_password
 
-  attr_accessor :password # Virtual attribute to store plaintext password temporarily
-
-  validates :password, presence: true
-  validates :title, presence: true, uniqueness: true
-  validates :username, presence: true
-  validates :url, presence: true
-  validates :username, uniqueness: { scope: [:user_id, :url]}
-
   def encrypt_password
-    return if password.blank?
+    return unless password.present?
 
-    cipher = OpenSSL::Cipher.new('AES-256-CBC')
-    cipher.encrypt
-    key = user.encryption_key
-    return if key.blank?
-
-    cipher.key = Digest::SHA256.digest(key)
-    iv = cipher.random_iv # 16 byte IV
-
-    encrypted = cipher.update(password) + cipher.final
-    self.encrypted_password = Base64.strict_encode64(iv + encrypted) #  IV + encrypted data
+    encryptor = ActiveSupport::MessageEncryptor.new(encryption_key_for_record)
+    self.password = encryptor.encrypt_and_sign(password)
   end
 
   def decrypt_password
-    return if encrypted_password.blank?
+    self.password = decrypted_password
+  end
 
-    decipher = OpenSSL::Cipher.new('AES-256-CBC')
-    decipher.decrypt
-    key = user.encryption_key
-    return if key.blank?
+  def decrypted_password
+    return unless password.present?
 
-    decipher.key = Digest::SHA256.digest(key) # 32 byte key
+    encryptor = ActiveSupport::MessageEncryptor.new(encryption_key_for_record)
+    encryptor.decrypt_and_verify(password)
+  rescue ActiveSupport::MessageEncryptor::InvalidMessage
+    nil # Handle invalid decryption
+  end
 
-    encrypted_data = Base64.strict_decode64(encrypted_password)
-    iv = encrypted_data.byteslice(0, 16) #  IV (first 16 bytes)
-    encrypted = encrypted_data.byteslice(16, encrypted_data.length - 16) # encrypted data
 
-    decipher.iv = iv
-    self.password = decipher.update(encrypted) + decipher.final
-  rescue => e
-    Rails.logger.error "Password decryption error: #{e.message}"
-    self.password = nil
+  scope :for_user, ->(user) {
+    where(user_id: user.shared_owners.pluck(:id))
+      .or(where(id: user.received_password_records.pluck(:password_record_id)))
+  }
+
+  scope :real_accessible_by, ->(user) {
+    where(user_id: user.shared_owners.pluck(:id)).
+      or(where(user_id: user.id))
+  }
+
+  scope :accessible_by, ->(user) { # this scope can be used in controllers like PasswordRecord.accessible_by(user)
+    where(user_id: user.shared_owners.pluck(:id))
+  }
+
+
+  validates :password, :title, :username, :url, presence: true
+  validates :title, presence: true, uniqueness: true
+  validates :username, uniqueness: { scope: [ :user_id, :url ] }
+  validates :url, format: { with: URI.regexp(%w[http https]), allow_blank: true }
+  validates :password, length: { minimum: 8 }, allow_nil: true # allow_nil allows updates without requiring new password
+  validates :title, length: { minimum: 3, maximum: 20 }
+
+  private
+
+  def encryption_key_for_record
+    secret_key = "#{Rails.application.credentials.active_record_encryption[:primary_key]}#{user.encryption_key}"
+    key = Digest::SHA256.digest(secret_key) # Convert to a valid 32-byte key
+    key
   end
 end

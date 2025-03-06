@@ -1,0 +1,2 @@
+module SharedAccessHelper
+end

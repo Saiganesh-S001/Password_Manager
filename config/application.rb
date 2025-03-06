@@ -15,6 +15,27 @@ module PasswordManager
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+    config.active_record.encryption.support_unencrypted_data = true
+    config.active_record.encryption.key_derivation_salt = "1234567890"
+    config.session_store :cookie_store, key: "_your_app_session"
+
+    config.paths.add File.join("app", "api"), glob: File.join("**", "*.rb")
+
+    config.autoload_paths += [
+      Rails.root.join("app", "api"),
+      Rails.root.join("app", "api", "v1")
+    ]
+
+    # Make sure eager loading works in production
+    config.eager_load_paths += [
+      Rails.root.join("app", "api"),
+      Rails.root.join("app", "api", "v1")
+    ]
+
+
+    # config.middleware.use Warden::JWTAuth::Middleware do |opts|
+    #   opts[:secret] = Rails.application.credentials.secret_key_base
+    # end
 
     # Configuration for the application, engines, and railties goes here.
     #

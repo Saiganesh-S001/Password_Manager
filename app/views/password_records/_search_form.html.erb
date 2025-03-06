@@ -1,0 +1,20 @@
+<%= form_tag "/password_records", method: "get", class: "flex flex-col md:flex-row md:items-center gap-4" do %>
+  <div class="flex-1">
+    <%= label_tag :search_by_title, "Title", class: "block text-sm font-medium text-gray-700" %>
+    <%= text_field_tag :search_by_title, params[:search_by_title], class: "mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" %>
+  </div>
+
+  <div class="flex-1">
+    <%= label_tag :search_by_url, "URL", class: "block text-sm font-medium text-gray-700" %>
+    <%= text_field_tag :search_by_url, params[:search_by_url], class: "mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" %>
+  </div>
+
+  <div class="flex-1">
+    <%= label_tag :search_by_username, "username", class: "block text-sm font-medium text-gray-700" %>
+    <%= text_field_tag :search_by_username, params[:search_by_username], class: "mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" %>
+  </div>
+
+  <div>
+    <%= submit_tag "Search", class: "mt-6 md:mt-0 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition duration-150" %>
+  </div>
+<% end %>

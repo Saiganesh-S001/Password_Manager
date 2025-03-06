@@ -1,51 +1,60 @@
-require 'securerandom'
-require 'base64'
-require 'openssl'
+require "securerandom"
+require "base64"
+require "openssl"
 
 class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  include Devise::JWT::RevocationStrategies::JTIMatcher # for jwt_revocation_strategy
+
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
-
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: self # self is the class itself (User)
   has_many :password_records, dependent: :destroy
-
   before_create :generate_encryption_key
-  before_save :encrypt_encryption_key
-  after_find :decrypt_encryption_key
+  before_validation :ensure_encryption_key
+
+  # Sharing all the password_records
+  has_many :owned_shares, class_name: "SharedAccess", foreign_key: "owner_id", dependent: :destroy
+  has_many :shared_with, through: :owned_shares, source: :collaborator
+
+  has_many :received_shares, class_name: "SharedAccess", foreign_key: "collaborator_id", dependent: :destroy
+  has_many :shared_owners, through: :received_shares, source: :owner
+
+  # Sharing only specific password_records
+  has_many :shared_password_records, class_name: "SharedPasswordRecord", foreign_key: "owner_id", dependent: :destroy
+  has_many :shared_passwords, through: :shared_password_records, source: :password_record, dependent: :destroy
+
+  has_many :received_password_records, class_name: "SharedPasswordRecord", foreign_key: "collaborator_id", dependent: :destroy
+  has_many :received_passwords, through: :received_password_records, source: :password_record, dependent: :destroy
+
 
   validates_uniqueness_of :email, :display_name
 
+  validates :email, :display_name, presence: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :encrypted_password, length: { minimum: 8 }
+  validates :encryption_key, presence: true
+
   def generate_encryption_key
-    self.encryption_key = SecureRandom.hex(16) if encryption_key.blank? # 16-byte key
+    self.encryption_key = SecureRandom.hex(32)
   end
 
-  def encrypt_encryption_key
-    return if encryption_key.blank?
+  def ensure_encryption_key
+    self.encryption_key ||= SecureRandom.hex(32)
+  end
 
-    cipher = OpenSSL::Cipher.new('AES-256-CBC') # ✅ Consistent with PasswordRecord
+  def encrypt_password(password)
+    cipher = OpenSSL::Cipher.new("AES-256-CBC")
     cipher.encrypt
-    key = Digest::SHA256.digest(Rails.application.secret_key_base) # Ensure 32-byte key
-    cipher.key = key
-    iv = cipher.random_iv # 16-byte IV
-    encrypted = cipher.update(encryption_key) + cipher.final
-    self.encryption_key = Base64.strict_encode64(iv + encrypted)
+    cipher.key = self.encryption_key
+    cipher.update(password) + cipher.final
   end
 
-  def decrypt_encryption_key
-    return if encryption_key.blank?
-
-    decipher = OpenSSL::Cipher.new('AES-256-CBC') # ✅ Same as encryption method
-    decipher.decrypt
-    key = Digest::SHA256.digest(Rails.application.secret_key_base) # Ensure 32-byte key
-    decipher.key = key
-
-    encrypted_data = Base64.strict_decode64(encryption_key)
-    iv = encrypted_data.byteslice(0, 16) # Extract IV (16 bytes)
-    encrypted = encrypted_data.byteslice(16, encrypted_data.length - 16) # Extract encrypted data
-
-    decipher.iv = iv
-    self.encryption_key = decipher.update(encrypted) + decipher.final
-  rescue => e
-    Rails.logger.error "Decryption error: #{e.message}"
-    nil
+  def decrypt_password(encrypted_password)
+    cipher = OpenSSL::Cipher.new("AES-256-CBC")
+    cipher.decrypt
+    cipher.key = self.encryption_key
+    cipher.update(encrypted_password) + cipher.final
   end
 end

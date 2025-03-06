@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title><%= content_for(:title) || "Password Manager" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,13 +21,45 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+            window.addEventListener("beforeunload", function () {
+                fetch("/reset_verification", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-Token": csrfToken,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "same-origin",
+                });
+            });
+        });
+
+    </script>
   </head>
 
-  <body>
+<body class="flex flex-col min-h-screen bg-teal-50">
     <%= render "layouts/navbar" %>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
-    <main class="container mx-auto mt-28 px-5 flex">
+     
+    <div class="fixed top-[70px] left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm mx-auto">
+      <% if notice.present? %>
+        <p class="py-2 px-3 bg-green-50 mb-4 text-green-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-500"
+           data-controller="flash"
+           id="notice">
+          <%= notice %>
+        </p>
+      <% end %>
+
+      <% if alert.present? %>
+        <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-300"
+           data-controller="flash"
+           id="alert">
+          <%= alert %>
+        </p>
+      <% end %>
+    </div>
+    <main class="container mx-auto mt-10 px-5 flex">
       <%= yield %>
     </main>
   </body>
