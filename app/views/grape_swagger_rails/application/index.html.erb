@@ -1,0 +1,28 @@
+<body class="swagger-section">
+<div id='swagger-ui-container' class="swagger-ui-wrap"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<%= javascript_include_tag 'grape_swagger_rails/application.js' %>
+
+<script>
+    $(document).ready(function () {
+        if (typeof SwaggerUi === "undefined") {
+            console.error("SwaggerUi is not loaded. Check if grape_swagger_rails/application.js is loading correctly.");
+            return;
+        }
+
+        var options = $("html").data('swagger-options');
+        window.swaggerUi = new SwaggerUi({
+            url: options.app_url + options.url,
+            dom_id: "swagger-ui-container",
+            supportHeaderParams: true,
+            supportedSubmitMethods: options.supported_submit_methods || [],
+            docExpansion: options.doc_expansion,
+            validatorUrl: options.validator_url,
+            apisSorter: "alpha"
+        });
+
+        window.swaggerUi.load();
+    });
+</script>
+</body>
