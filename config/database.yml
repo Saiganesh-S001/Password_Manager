@@ -31,7 +31,7 @@ development:
   username: postgres
 
   # The password associated with the PostgreSQL role (username).
-  password: Ssai@12Ganesh
+  password: <%= Rails.application.credentials.dig(:database, :db_password) %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
@@ -58,7 +58,7 @@ test:
   <<: *default
   username: postgres
   database: password_manager_test
-  password: Ssai@12Ganesh
+  password: <%= Rails.application.credentials.dig(:database, :db_password) %>
   host: localhost
   port: 5433
 
@@ -87,7 +87,7 @@ production:
     <<: *default
     database: password_manager_production
     username: password_manager
-    password: <%= ENV["PASSWORD_MANAGER_DATABASE_PASSWORD"] %>
+    password: <%= Rails.application.credentials.dig(:database, :db_password) %>
   cache:
     <<: *primary_production
     database: password_manager_production_cache
