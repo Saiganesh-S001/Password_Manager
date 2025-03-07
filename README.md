@@ -78,7 +78,7 @@ Add the following entries:
 
 ```yaml
 database:
-  db_password :your_database_password
+  db_password: your_database_password
 secret_key_base: your_secret_key_base
 jwt_secret: your_jwt_secret
 ```
