@@ -69,7 +69,11 @@ production:
 ### Setup Rails Credentials
 
 Store sensitive information like database passwords and secret keys in Rails credentials. To edit credentials, run:
-
+1. First remove the existing credential file
+```bash
+rm config/credentials.yml.enc
+```
+2. Then start editing the credential file (this is will create a new encrypted credential file using the app master key if there is no credential file)
 ```bash
 EDITOR="code --wait" bin/rails credentials:edit
 ```
