@@ -70,6 +70,7 @@ class PasswordRecordsController < ApplicationController
     if @password_record.user_id == current_user.id
       respond_to do |format|
         if @password_record.update(password_record_params)
+          format.turbo_stream
           format.html { redirect_to @password_record, notice: "Password record was successfully updated." }
           format.json { render :show, status: :ok, location: @password_record }
         else

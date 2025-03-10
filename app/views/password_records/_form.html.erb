@@ -1,4 +1,4 @@
-<%= form_with(model: password_record, class: "contents") do |form| %>
+<%= form_with(model: password_record, class: "contents", data: { turbo_frame: dom_id(password_record, :form) }) do |form| %>
   <% if password_record.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(password_record.errors.count, "error") %> prohibited this password_record from being saved:</h2>
