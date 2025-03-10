@@ -20,19 +20,15 @@ RSpec.describe 'Sharing', type: :system do
     end
 
     it 'allows revoking access' do
-      # First share access
       fill_in 'email', with: collaborator.email
       click_button 'Share Access'
 
-      # Find and click the Manage Access dropdown
       find('button', text: /Manage Access ▼/).click
 
-      # Click Revoke All Access within the dropdown
       within('.dropdown-content') do
         click_button 'Revoke All Access'
       end
 
-      # Accept the confirmation dialog
       accept_confirm
 
       expect(page).to have_content('Access removed')
@@ -43,13 +39,12 @@ RSpec.describe 'Sharing', type: :system do
       fill_in 'email', with: 'invalid@email'
       click_button 'Share Access'
 
-      expect(page).to have_content('Invalid user')
+      expect(page).to have_content('User not found')
     end
   end
 
   describe 'Accessing shared records' do
     before do
-      # Share the password record
       create(:shared_password_record, owner: owner, collaborator: collaborator, password_record: password_record)
       sign_in collaborator
       visit password_records_path

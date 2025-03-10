@@ -2,12 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    // Add click event listener to document
     document.addEventListener("click", this.handleDocumentClick.bind(this))
   }
 
   disconnect() {
-    // Clean up event listener
     document.removeEventListener("click", this.handleDocumentClick.bind(this))
   }
 
