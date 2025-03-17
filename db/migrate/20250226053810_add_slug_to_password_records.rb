@@ -4,3 +4,5 @@ class AddSlugToPasswordRecords < ActiveRecord::Migration[8.0]
     add_index :password_records, :slug, unique: true
   end
 end
+
+

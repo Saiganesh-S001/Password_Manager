@@ -1,4 +1,7 @@
 <%= turbo_stream.replace dom_id(@password_record) do %>
-    <%= render @password_record %>
+    <%= render @password_record, show_decrypted_password: true %>
 <% end %>
 
+<%= turbo_stream.update "flash_messages" do %>
+    <%= render "layouts/flash" %>
+<% end %>

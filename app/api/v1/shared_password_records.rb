@@ -1,5 +1,17 @@
 module V1
   class SharedPasswordRecords < Grape::API
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      error!({ error: e.message }, 404)
+    end
+
+    rescue_from Grape::Exceptions::ValidationErrors do |e|
+      error!({ error: e.full_messages }, 400)
+    end
+
+    rescue_from :all do |e|
+      error!({ error: e.message }, 500)
+    end
+
     helpers do
       def authenticate_user!
         token = headers["Authorization"]&.split(" ")&.last
@@ -26,24 +38,42 @@ module V1
     resource :shared_password_records do
       desc "Share a password record with another user"
       params do
-        requires :password_record_id, type: Integer, desc: "The ID of the password record to share"
+        optional :password_record_id, type: Integer, desc: "The ID of the password record to share"
         requires :email, type: String, desc: "The email of the user to share the password record with"
       end
       post do
         collaborator = User.find_by(email: params[:email])
-        error!("Invalid User", 404) if collaborator.nil? || collaborator == current_user
+        error!("Invalid User", 404) unless collaborator
+        error!("Cannot share with yourself", 400) if collaborator == current_user
 
-        password_record = current_user.password_records.find(params[:password_record_id])
-        shared_password_record = SharedPasswordRecord.create!(
-          owner: current_user,
-          collaborator: collaborator,
-          password_record: password_record
-        )
-
-        if shared_password_record.persisted? # persisted vs save -> save is for new records, persisted is for existing records
-          present shared_password_record, with: Entities::SharedPasswordRecordEntity
+        # if there is password_record_id, use it, otherwise share access to all password records
+        if params[:password_record_id]
+          password_record = current_user.password_records.find(params[:password_record_id])
+          shared_password_record = SharedPasswordRecord.create!(
+            owner: current_user,
+            collaborator: collaborator,
+            password_record: password_record
+          )
+          if shared_password_record.persisted? # persisted vs save -> save is for new records, persisted is for existing records
+            present shared_password_record, with: Entities::SharedPasswordRecordEntity
+          else
+            error!("Failed to share password record", 400)
+          end
         else
-          error!("Failed to share password record", 400)
+          shared_records = []
+          current_user.password_records.each do |password_record|
+            shared_password_record = SharedPasswordRecord.create!(
+              owner: current_user,
+              collaborator: collaborator,
+              password_record: password_record
+            )
+            shared_password_records << shared_password_record
+          end
+          if shared_records.all?(&:persisted?)
+            present shared_records, with: Entities::SharedPasswordRecordEntity
+          else
+            error!("Failed to share password records", 400)
+          end
         end
       end
 
@@ -64,8 +94,10 @@ module V1
       end
       delete do
         collaborator = User.find_by(email: params[:email])
+        error!("Invalid User", 404) unless collaborator
         password_record = current_user.password_records.find(params[:password_record_id])
         shared_password_record = SharedPasswordRecord.find_by(owner: current_user, collaborator: collaborator, password_record: password_record)
+        error!("Shared access not found", 404) unless shared_password_record
         shared_password_record.destroy
         { message: "Shared access removed with #{collaborator.email} for password record #{password_record.title}" }
       end

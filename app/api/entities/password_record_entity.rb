@@ -4,6 +4,7 @@ module Entities
     expose :title
     expose :username
     expose :url
+    expose :password
     expose :created_at
     expose :updated_at
     expose :user, using: Entities::UserEntity

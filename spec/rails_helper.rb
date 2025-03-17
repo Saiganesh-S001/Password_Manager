@@ -34,7 +34,7 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-config.fixture_paths = [
+  config.fixture_paths = [
     Rails.root.join('spec/fixtures')
   ]
 
@@ -85,6 +85,8 @@ config.fixture_paths = [
   # To enable this behaviour uncomment the line below.
   # config.infer_spec_type_from_file_location!
   config.use_transactional_fixtures = false
+
+  #config.include RequestSpecHelper, type: :request
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
