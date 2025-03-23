@@ -1,14 +1,17 @@
 module V1
   class Auth < Grape::API
     rescue_from ActiveRecord::RecordNotFound do |e|
+      Rails.logger.error("Record not found: #{e.message}")
       error!({ error: e.message }, 404)
     end
 
     rescue_from Grape::Exceptions::ValidationErrors do |e|
+      Rails.logger.error("Validation errors: #{e.full_messages}")
       error!({ error: e.full_messages }, 400)
     end
 
     rescue_from :all do |e|
+      Rails.logger.error("Internal server error: #{e.message}")
       error!({ error: e.message }, 500)
     end
 
