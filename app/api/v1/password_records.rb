@@ -49,6 +49,10 @@ module V1
         search_username = params[:search_by_username]&.strip&.downcase
         search_url = params[:search_by_url]&.strip&.downcase
 
+        puts "search_title: #{search_title}"
+        puts "search_username: #{search_username}"
+        puts "search_url: #{search_url}"
+
         base_query = PasswordRecord.for_user(current_user)
 
         records_made_by_current_user = current_user.password_records.order(created_at: :desc)
@@ -60,7 +64,8 @@ module V1
          conditions << PasswordRecord.arel_table[:username].matches("%#{search_username}%") if search_username.present?
          conditions << PasswordRecord.arel_table[:url].matches("%#{search_url}%") if search_url.present?
 
-         search_condition = conditions.inject(&:and)
+         # apply or conditions
+         search_condition = conditions.reduce(:or)
 
          records_made_by_current_user = records_made_by_current_user.where(search_condition)
          records_shared_with_current_user = records_shared_with_current_user.where(search_condition)
