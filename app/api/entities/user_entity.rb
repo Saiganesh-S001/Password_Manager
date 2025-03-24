@@ -3,7 +3,5 @@ module Entities
     expose :id
     expose :email
     expose :display_name
-    expose :created_at
-    expose :updated_at
   end
 end

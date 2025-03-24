@@ -3,8 +3,12 @@ class SharedAccessController < ApplicationController
 
   def create
     collaborator = User.find_by(email: params[:email])
-    if collaborator.blank? || collaborator == current_user
-      redirect_to password_records_path, alert: "Invalid user" and return
+    if collaborator.blank?
+      redirect_to password_records_path, alert: "User not found"
+      return
+    elsif collaborator == current_user
+      redirect_to password_records_path, alert: "Invalid user"
+      return
     end
 
     # particular password record

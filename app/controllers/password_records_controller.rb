@@ -70,9 +70,14 @@ class PasswordRecordsController < ApplicationController
     if @password_record.user_id == current_user.id
       respond_to do |format|
         if @password_record.update(password_record_params)
+          @password_record.decrypt_password
+          flash.now[:notice] = "Password record was successfully updated."
+          format.turbo_stream
           format.html { redirect_to @password_record, notice: "Password record was successfully updated." }
           format.json { render :show, status: :ok, location: @password_record }
         else
+          flash.now[:alert] = "Failed to update password record."
+          format.turbo_stream
           format.html { render :edit, status: :unprocessable_entity }
           format.json { render json: @password_record.errors, status: :unprocessable_entity }
         end
@@ -83,7 +88,6 @@ class PasswordRecordsController < ApplicationController
         format.json { head :no_content }
       end
     end
-
   end
 
   # DELETE /password_records/1 or /password_records/1.json

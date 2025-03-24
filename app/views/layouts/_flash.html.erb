@@ -1,0 +1,17 @@
+<div id="flash_messages">
+  <% if flash[:notice] %>
+    <p class="py-2 px-3 bg-green-50 text-green-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-500"
+       data-controller="flash"
+       id="notice">
+      <%= flash[:notice] %>
+    </p>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <p class="py-2 px-3 bg-red-50 text-red-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-300"
+       data-controller="flash"
+       id="alert">
+      <%= flash[:alert] %>
+    </p>
+  <% end %>
+</div>

@@ -31,6 +31,19 @@ RSpec.describe "SharedAccess", type: :request do
       expect(response).to redirect_to(password_records_path)
       expect(flash[:alert]).to include("Invalid user")
     end
+
+    it "prevents sharing with a non-existent user" do
+      post shared_access_index_path, params: { email: "nonexistent@example.com" }
+      expect(response).to redirect_to(password_records_path)
+      expect(flash[:alert]).to include("User not found")
+    end
+
+    it "prevents sharing with a user who is already a collaborator" do
+      create(:shared_password_record, owner: owner, collaborator: collaborator, password_record: password_record)
+      post shared_access_index_path, params: { email: collaborator.email, password_record_id: password_record.id }
+      expect(response).to redirect_to(password_records_path)
+      expect(flash[:alert]).to include("Collaborator Already shared with this user")
+    end
   end
 
   describe "DELETE /shared_access/:id" do

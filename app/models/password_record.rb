@@ -49,7 +49,7 @@ class PasswordRecord < ApplicationRecord
   validates :username, uniqueness: { scope: [ :user_id, :url ] }
   validates :url, format: { with: URI.regexp(%w[http https]), allow_blank: true }
   validates :password, length: { minimum: 8 }, allow_nil: true # allow_nil allows updates without requiring new password
-  validates :title, length: { minimum: 3, maximum: 20 }
+  validates :title, length: { minimum: 3, maximum: 50 }
 
   private
 

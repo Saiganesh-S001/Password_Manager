@@ -41,23 +41,8 @@
 
 <body class="flex flex-col min-h-screen bg-teal-50">
     <%= render "layouts/navbar" %>
-     
     <div class="fixed top-[70px] left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm mx-auto">
-      <% if notice.present? %>
-        <p class="py-2 px-3 bg-green-50 mb-4 text-green-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-500"
-           data-controller="flash"
-           id="notice">
-          <%= notice %>
-        </p>
-      <% end %>
-
-      <% if alert.present? %>
-        <p class="py-2 px-3 bg-red-50 mb-4 text-red-500 font-medium rounded-md text-center shadow-lg transition-opacity duration-300"
-           data-controller="flash"
-           id="alert">
-          <%= alert %>
-        </p>
-      <% end %>
+      <%= render "layouts/flash" %>
     </div>
     <main class="container mx-auto mt-10 px-5 flex">
       <%= yield %>
