@@ -13,7 +13,7 @@
       <img src="./assets/0.13.1/loading.gif" alt="loading"/>
     </div>
     <div id="wrapper" class="hide">
-      <div class="timestamp">Generated <abbr class="timeago" title="2025-03-24T12:51:44+05:30">2025-03-24T12:51:44+05:30</abbr></div>
+      <div class="timestamp">Generated <abbr class="timeago" title="2025-03-24T16:27:22+05:30">2025-03-24T16:27:22+05:30</abbr></div>
       <ul class="group_tabs"></ul>
 
       <div id="content">
@@ -22,14 +22,14 @@
     <span class="group_name">All Files</span>
     (<span class="covered_percent">
       <span class="red">
-  78.34%
+  77.96%
 </span>
 
      </span>
      covered at
      <span class="covered_strength">
        <span class="green">
-         6.33
+         6.29
        </span>
     </span> hits/line
     )
@@ -42,11 +42,11 @@
   </div>
 
   <div class="t-line-summary">
-    <b>494</b> relevant lines,
-    <span class="green"><b>387</b> lines covered</span> and
-    <span class="red"><b>107</b> lines missed. </span>
+    <b>499</b> relevant lines,
+    <span class="green"><b>389</b> lines covered</span> and
+    <span class="red"><b>110</b> lines missed. </span>
     (<span class="red">
-  78.34%
+  77.96%
 </span>
 )
   </div>
@@ -126,12 +126,12 @@
         
           <tr class="t-file">
             <td class="strong t-file__name"><a href="#d5df53b366b6312d7a7fe0e7226dda524f7ea2ea" class="src_link" title="app/api/v1/auth.rb">app/api/v1/auth.rb</a></td>
-            <td class="red strong cell--number t-file__coverage">49.35 %</td>
-            <td class="cell--number">119</td>
-            <td class="cell--number">77</td>
-            <td class="cell--number">38</td>
-            <td class="cell--number">39</td>
-            <td class="cell--number">2.34</td>
+            <td class="red strong cell--number t-file__coverage">48.78 %</td>
+            <td class="cell--number">132</td>
+            <td class="cell--number">82</td>
+            <td class="cell--number">40</td>
+            <td class="cell--number">42</td>
+            <td class="cell--number">2.32</td>
             
           </tr>
         
@@ -949,14 +949,14 @@
     <span class="group_name">Ungrouped</span>
     (<span class="covered_percent">
       <span class="red">
-  72.56%
+  71.96%
 </span>
 
      </span>
      covered at
      <span class="covered_strength">
        <span class="green">
-         3.09
+         3.07
        </span>
     </span> hits/line
     )
@@ -969,11 +969,11 @@
   </div>
 
   <div class="t-line-summary">
-    <b>266</b> relevant lines,
-    <span class="green"><b>193</b> lines covered</span> and
-    <span class="red"><b>73</b> lines missed. </span>
+    <b>271</b> relevant lines,
+    <span class="green"><b>195</b> lines covered</span> and
+    <span class="red"><b>76</b> lines missed. </span>
     (<span class="red">
-  72.56%
+  71.96%
 </span>
 )
   </div>
@@ -1053,12 +1053,12 @@
         
           <tr class="t-file">
             <td class="strong t-file__name"><a href="#d5df53b366b6312d7a7fe0e7226dda524f7ea2ea" class="src_link" title="app/api/v1/auth.rb">app/api/v1/auth.rb</a></td>
-            <td class="red strong cell--number t-file__coverage">49.35 %</td>
-            <td class="cell--number">119</td>
-            <td class="cell--number">77</td>
-            <td class="cell--number">38</td>
-            <td class="cell--number">39</td>
-            <td class="cell--number">2.34</td>
+            <td class="red strong cell--number t-file__coverage">48.78 %</td>
+            <td class="cell--number">132</td>
+            <td class="cell--number">82</td>
+            <td class="cell--number">40</td>
+            <td class="cell--number">42</td>
+            <td class="cell--number">2.32</td>
             
           </tr>
         
@@ -1820,7 +1820,7 @@
     <h3>app/api/v1/auth.rb</h3>
     <h4>
       <span class="red">
-  49.35%
+  48.78%
 </span>
 
       lines covered
@@ -1829,9 +1829,9 @@
     
 
     <div class="t-line-summary">
-      <b>77</b> relevant lines.
-      <span class="green"><b>38</b> lines covered</span> and
-      <span class="red"><b>39</b> lines missed.</span>
+      <b>82</b> relevant lines.
+      <span class="green"><b>40</b> lines covered</span> and
+      <span class="red"><b>42</b> lines missed.</span>
     </div>
 
     
@@ -2531,7 +2531,7 @@
 
             
 
-            <code class="ruby">          token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first</code>
+            <code class="ruby">          token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first # expires in 10 hours</code>
           </li>
         </div>
       
@@ -3083,12 +3083,146 @@
 
             
 
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="118">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">      desc &quot;Refresh JWT token&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="119">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">      post :refresh do</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="missed" data-hits="0" data-linenumber="120">
+            
+
+            
+
+            <code class="ruby">        authenticate_user!</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="121">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="122">
+            
+
+            
+
+            <code class="ruby">        # Generate a new token with a fresh expiration time</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="missed" data-hits="0" data-linenumber="123">
+            
+
+            
+
+            <code class="ruby">        token = Warden::JWTAuth::UserEncoder.new.call(current_user, :user, nil).first</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="124">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="125">
+            
+
+            
+
+            <code class="ruby">        {</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="missed" data-hits="0" data-linenumber="126">
+            
+
+            
+
+            <code class="ruby">          user: Entities::UserEntity.represent(current_user),</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="127">
+            
+
+            
+
+            <code class="ruby">          token: token</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="128">
+            
+
+            
+
+            <code class="ruby">        }</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="129">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="130">
+            
+
+            
+
             <code class="ruby">    end</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="118">
+          <li class="never" data-hits="" data-linenumber="131">
             
 
             
@@ -3098,7 +3232,7 @@
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="119">
+          <li class="never" data-hits="" data-linenumber="132">
             
 
             

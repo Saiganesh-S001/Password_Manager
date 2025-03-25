@@ -61,7 +61,7 @@ module V1
         user = User.find_by(email: params[:email])
         if user&.valid_password?(params[:password])
           # token  = Warden::JWTAuth::TokenEncoder.new.call(user.jti) # here we are encoding the user's jti to a token
-          token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first
+          token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first # expires in 10 hours
           present :user, user, with: Entities::UserEntity
           present :token, token
         else
@@ -113,6 +113,19 @@ module V1
         else
           error!({ error: "Invalid current password" }, 401)
         end
+      end
+
+      desc "Refresh JWT token"
+      post :refresh do
+        authenticate_user!
+
+        # Generate a new token with a fresh expiration time
+        token = Warden::JWTAuth::UserEncoder.new.call(current_user, :user, nil).first
+
+        {
+          user: Entities::UserEntity.represent(current_user),
+          token: token
+        }
       end
     end
   end
