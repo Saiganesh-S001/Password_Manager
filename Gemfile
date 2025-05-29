@@ -72,7 +72,7 @@ end
 
 gem "devise", "~> 4.9", ">= 4.9.4"
 gem "friendly_id", "~> 5.5", ">= 5.5.1"
-gem "tailwindcss-ruby", "~> 4.0"
+gem "tailwindcss-ruby", "~> 4.1"
 gem "factory_bot_rails", "~> 6.4", ">= 6.4.4"
 gem "sib-api-v3-sdk"
 
